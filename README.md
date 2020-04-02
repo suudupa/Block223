@@ -14,7 +14,7 @@ If users login with their admin account, they can choose to either create a new 
 
 ![image](https://user-images.githubusercontent.com/43659916/78211794-02cd5800-747c-11ea-9e15-14dfa5d5c939.png)
 
-In the edit game screen, they can customize the game properties (number of levels, number of blocks per level, paddle length, etc.) or add new blocks to the game:
+In the edit game screen, they can customize the game properties (number of levels, number of blocks per level, paddle length, etc.) or add new blocks to the game. When they are done editing, they can save the game, and then test it before publishing it:
 
 ![image](https://user-images.githubusercontent.com/43659916/78211777-f648ff80-747b-11ea-9b15-0b1c554587f7.png)
 
