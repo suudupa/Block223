@@ -1,0 +1,41 @@
+namespace ca.mcgill.ecse223.block.controller;
+
+class TOPlayableGame {
+   name;
+   Integer number; // this is the id of a game that can be continued and -1 if not. 
+   Integer currentLevel; // this is the current level of a game that can be continued and 0 if not
+}
+
+class TOCurrentlyPlayedGame {
+   gamename;
+   Boolean paused;
+   Integer score;
+   Integer lives;
+   Integer currentLevel;
+   playername; // "test run" if the admin is doing a test, otherwise name of the player
+   1 -- * TOCurrentBlock blocks;
+   Double currentBallX;
+   Double currentBallY;
+   Double currentPaddleLength;
+   Double currentPaddleX;
+}
+
+class TOCurrentBlock {
+   Integer red;
+   Integer green;
+   Integer blue;
+   Integer points;
+   Integer x;
+   Integer y;
+}
+
+class TOHallOfFame {
+   gamename;
+   1 -- * TOHallOfFameEntry entries;
+}
+
+class TOHallOfFameEntry {
+   Integer position;
+   playername;
+   Integer score;
+}

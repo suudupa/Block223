@@ -1,0 +1,52 @@
+namespace ca.mcgill.ecse223.block.controller;
+
+class TOGame {
+   name;
+   Integer nrLevels;
+   Integer nrBlocksPerLevel;
+   Integer minBallSpeedX;
+   Integer minBallSpeedY;
+   Double ballSpeedIncreaseFactor;
+   Integer maxPaddleLength;
+   Integer minPaddleLength;
+}
+
+class TOBlock {
+   Integer id;
+   Integer red;
+   Integer green;
+   Integer blue;
+   Integer points;
+}
+
+class TOGridCell {
+   Integer gridHorizontalPosition;
+   Integer gridVerticalPosition;
+   Integer id;
+   Integer red;
+   Integer green;
+   Integer blue;
+   Integer points;
+}
+
+class TOUserMode {
+  enum Mode { None, Design, Play }
+  Mode mode;
+}
+
+class TORenderedGame {
+  Integer score;
+  Integer numLives;
+  Integer currentLevel;
+  Double paddleX;
+  Double ballX;
+  Double ballY;
+  Double ballSpeedX;
+  Double ballSpeedY;
+  0..1 -- * TOGridCell blocks;
+}
+
+class TOHighScore {
+username;
+Integer score;
+}

@@ -1,0 +1,152 @@
+external interface Serializable{}
+
+class Block223 {
+  depend java.io.Serializable;
+  isA Serializable; 
+  
+  private static final long serialVersionUID = 6181302407834705923L;
+  
+  public void reinitialize() {
+
+		User.reinitializeUniqueUsername(this.getUsers());
+		Game.reinitializeUniqueName(this.getGames());
+		List<Block> blocks = new ArrayList<Block>();
+		for (Game g : this.getGames()) {
+			for (Block b : g.getBlocks()) {
+				blocks.add(b);
+			}
+		}
+		Block.reinitializeAutouniqueID(blocks);
+		List<PlayedGame> savedGames = new ArrayList<PlayedGame>();
+		for (UserRole u : getRoles()) {
+			if (u instanceof Player) {
+			  for (PlayedGame g : ((Player)u).getPlayedGames()) {
+				  savedGames.add(g);
+			  }
+			}
+		}
+		PlayedGame.reinitializeAutouniqueID(savedGames);
+	}
+}
+
+class Admin {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 1959250384912895829L;
+}
+
+class Ball {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 7342002601644000501L;
+}
+
+class Block {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 5332292624658907512L;
+   public static void reinitializeAutouniqueID(List<Block> blocks) {
+	    nextId = 0; 
+	    for (Block b : blocks) {
+	      if (b.getId() > nextId) {
+	        nextId = b.getId();
+	      }
+	    }
+	    nextId++;
+  }
+}
+
+class BlockAssignment {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = -6011556325373584641L;
+}
+
+class Game {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = -210105651472293481L;
+  
+   public static void reinitializeUniqueName(List<Game> games) {
+	  gamesByName = new HashMap<String, Game>();
+	  for (Game g : games) {
+		  gamesByName.put(g.name, g);
+		  g. hallOfFameEntriesPriority = 
+      new Comparator<HallOfFameEntry>(){
+        @Override
+        public int compare(HallOfFameEntry arg0, HallOfFameEntry arg1)
+        {
+          return ((Integer)arg0.getScore()).compareTo(
+                 ((Integer)arg1.getScore()));
+        }
+      };
+	  }
+	 
+  }
+}
+
+class Level {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = -7956760334392179806L;
+}
+
+class Paddle {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 8062668971918939261L;
+}
+
+class Player {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 4495546738870249064L;
+}
+
+class User {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 4267485601061759914L;
+  
+  
+  public static void reinitializeUniqueUsername(List<User> users) {
+	  usersByUsername = new HashMap<String, User>();
+	  for (User u : users) {
+		  usersByUsername.put(u.username, u);
+	  }
+  }
+}
+
+class UserRole {
+  depend java.io.Serializable;
+  isA Serializable; 
+  private static final long serialVersionUID = 3389752283403781197L;
+}
+
+
+class PlayedGame {
+  depend java.io.Serializable;
+  isA Serializable;
+  private static final long serialVersionUID = 8597675110221231714L;
+  public static void reinitializeAutouniqueID(List<PlayedGame> games) {
+	    nextId = 0; 
+	    for (PlayedGame pg : games) {
+	      if (pg.getId() > nextId) {
+	        nextId = pg.getId();
+	      }
+	    }
+	    nextId++;
+  }
+}
+
+class PlayedBlockAssignment {
+  depend java.io.Serializable;
+  isA Serializable;
+  private static final long serialVersionUID = 939001747760934442L;
+}
+
+class HallOfFameEntry {
+  depend java.io.Serializable;
+  isA Serializable;
+  private static final long serialVersionUID = 6404159261985579849L;
+}

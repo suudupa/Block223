@@ -1,0 +1,216 @@
+	private void updateHallOfFame() {
+		if (player instanceof Player) {
+		   game.getHallOfFame().add(new HighScore(score, (Player) player, game));
+	   	}
+	}
+	
+	//Saves the rendered level -- CHECK THAT USER IS A PLAYER
+	private void saveGame() {
+		  if (player instanceof Player) {
+    	try {
+		   Block223Controller.saveRenderedGame();
+    	} catch (Exception e) {}
+	   }
+	}
+	
+	//Fills up missing blocks at start of level
+	private void initializeLevel() {
+		//TODO: check off by 1 with currentLevel
+		Level level = game.getLevel(currentLevel);
+		blocks.clear();
+		ball.resetXPos();
+	   	ball.resetYPos();
+	   	ball.resetXSpeed();
+	  	ball.resetYSpeed();
+	   	renderedPaddle.resetXPos();
+		for (BlockAssignment b : level.getBlockAssignments()) {
+			blocks.add(b);
+		}
+		
+	    while (blocks.size() < game.getNrBlocksPerLevel()) {
+	    	int randomIndex = (int)(Math.random() * game.getBlocks().size());
+	    	Block randomBlock = game.getBlocks().get(randomIndex);
+	    	int randomX, randomY;
+	    	boolean positionOccupied;
+	    	do {
+	    		positionOccupied = false;
+	    		randomX = (int)(Math.random() * 15) + 1;
+	    		randomY = (int)(Math.random() * 15) + 1;
+	    		for (BlockAssignment ba : blocks) {
+	    			if (randomX == ba.getGridHorizontalPosition() 
+	    					&& randomY == ba.getGridVerticalPosition()) {
+	    				positionOccupied = true;
+	    				break;//breaks inner loop
+	    			}
+	    		}
+	    	} while (positionOccupied);
+	    	blocks.add(new BlockAssignment(randomX, randomY, level, randomBlock, game));
+	    }
+	}
+	
+	//Moves the bal forward
+	private void moveBall() {
+	   ball.setXPos(ball.getXPos() + ball.getXSpeed());
+	   ball.setYPos(ball.getYPos() + ball.getYSpeed());
+	}
+	
+	//change ball direction when it hits a paddle
+	private void bounceOffPaddle(){
+		bounceOffSide(Side.TOP);
+	}
+	
+	//change ball direction when it hits a paddle
+	private void bounceOffWall(){
+		   Map<Side, Double> distToSide = new HashMap();
+	   /*
+	    * Note: the sides in this case seem reversed, because
+	    * hitting the top wall involves bouncing off the bottom of 
+	    * a surface. Likewise, left/right are reversed
+	    */
+	   distToSide.put(Side.BOTTOM, Math.abs(Game.PLAY_AREA_SIDE - ball.getYPos()));
+	   distToSide.put(Side.RIGHT, Math.abs(ball.getXPos()));
+	   distToSide.put(Side.LEFT, Math.abs(Game.PLAY_AREA_SIDE - ball.getXPos()));
+	   double minDist = Game.PLAY_AREA_SIDE;
+	   Side minSide = Side.BOTTOM;
+	   for (Side s : distToSide.keySet()) {
+		   if (distToSide.get(s) < minDist) {
+			   minDist = distToSide.get(s);
+			   minSide = s;
+		   }
+	   }
+	   bounceOffSide(minSide);
+	}
+	
+	//handles a ball breaking a block
+	private void breakBlock() {
+	int blockIndex = -1;
+	   Side sideHit = null;
+	   for (int i = 0; i < blocks.size(); i++) {
+		   BlockAssignment b = blocks.get(i);
+			int upperLeftX = (b.getGridHorizontalPosition() - 1) * (Game.COLUMNS_PADDING + Block.SIZE) 
+					+ Game.WALL_PADDING;
+			int upperLeftY = Game.PLAY_AREA_SIDE - ((b.getGridVerticalPosition() - 1) * (Game.ROW_PADDING + Block.SIZE) 
+					+ Game.WALL_PADDING);
+			upperLeftX -= Ball.BALL_DIAMETER / 2;
+			upperLeftY -= Ball.BALL_DIAMETER / 2;
+			int lowerRightX = upperLeftX + Block.SIZE + Ball.BALL_DIAMETER;
+			int lowerRightY = upperLeftY + Block.SIZE + Ball.BALL_DIAMETER;
+			
+			if (ball.getXPos() >= upperLeftX && ball.getXPos() <= lowerRightX
+					&& ball.getYPos() >= upperLeftY && ball.getYPos() <= lowerRightY) {
+				//found block!
+				blockIndex = i;
+				//need to figure out the side being hit for bouncing purposes
+				Map<Side, Double> distToSide = new HashMap();
+				distToSide.put(Side.TOP, Math.abs(ball.getYPos() - upperLeftY));
+				distToSide.put(Side.BOTTOM, Math.abs(ball.getYPos() - lowerRightY)); 
+				distToSide.put(Side.LEFT, Math.abs(ball.getXPos() - upperLeftX));
+				distToSide.put(Side.RIGHT, Math.abs(ball.getXPos() - lowerRightX)); 
+				double minDist = Double.MAX_VALUE;
+				for (Side s : distToSide.keySet()) {
+					if (distToSide.get(s) < minDist) {
+						minDist = distToSide.get(s);
+						sideHit = s;
+					}
+				}
+				break;
+			}
+		}
+	   if (blockIndex == -1) {
+		   //Handle error
+	   } else {
+		   BlockAssignment b = blocks.get(blockIndex);
+		   blocks.remove(blockIndex);
+		   score += b.getBlock().getPoints();
+		   bounceOffSide(sideHit);
+	   }
+	}
+	
+	private boolean pathClear() {
+		return !(hitPaddle() || hitWall() || hitBlock() || outOfBounds());
+	}
+	private boolean hitPaddle() {
+		return ball.getYPos() <= Paddle.VERTICAL_DISTANCE 
+		&& ball.getYPos() >= Paddle.VERTICAL_DISTANCE - Paddle.PADDLE_WIDTH
+		&& ball.getXPos() >= renderedPaddle.getXPos() 
+		&& ball.getXPos() <= renderedPaddle.getXPos() + renderedPaddle.getWidth();
+	}
+	private boolean hitWall() {
+		return ball.getXPos() <= 0 || ball.getXPos() >= Game.PLAY_AREA_SIDE || ball.getYPos() >= Game.PLAY_AREA_SIDE;
+	}
+	private boolean hitBlock() {
+		for (BlockAssignment b : blocks) {
+		int upperLeftX = (b.getGridHorizontalPosition() - 1) * (Game.COLUMNS_PADDING + Block.SIZE) 
+				+ Game.WALL_PADDING;
+		int upperLeftY = Game.PLAY_AREA_SIDE - ((b.getGridVerticalPosition() - 1) * (Game.ROW_PADDING + Block.SIZE) 
+				+ Game.WALL_PADDING);
+		upperLeftX -= Ball.BALL_DIAMETER / 2;
+		upperLeftY -= Ball.BALL_DIAMETER / 2;
+		int lowerRightX = upperLeftX + Block.SIZE + Ball.BALL_DIAMETER;
+		int lowerRightY = upperLeftY + Block.SIZE + Ball.BALL_DIAMETER;
+		
+		if (ball.getXPos() >= upperLeftX && ball.getXPos() <= lowerRightX
+				&& ball.getYPos() >= upperLeftY && ball.getYPos() <= lowerRightY) {
+			return true;
+		}
+	}
+    return false;
+	}
+	private boolean outOfBounds() {
+		return ball.getYPos() < Paddle.VERTICAL_DISTANCE - Paddle.PADDLE_WIDTH;
+	}
+	
+	private boolean hasBlocksLeft() {
+		return blocks.size() > 0;
+	}
+	
+	private boolean paddleClearLeft() {
+		return renderedPaddle.getXPos() > 0;
+	}
+	private boolean paddleClearRight() {
+		return renderedPaddle.getXPos() + renderedPaddle.getWidth() / 2 < Game.PLAY_AREA_SIDE;
+	}
+	
+	private void movePaddleRight() {
+	  renderedPaddle.setXPos(renderedPaddle.getXPos() + 1);
+	}
+	
+	private void movePaddleLeft() {
+	  renderedPaddle.setXPos(renderedPaddle.getXPos() - 1);
+	}
+	
+	private boolean hasNextLevel() {
+		return currentLevel + 1 < game.getLevels().size();
+	}
+	
+	private void loadNextLevel() {
+	   currentLevel++;
+	}
+	
+	private boolean hasLivesLeft() {
+		return numLives > 0;
+	}
+	
+	private void decrementLives() {
+		numLives--;
+  	}
+	
+	private boolean hasMoreLevels() {
+    	return currentLevel + 1 < game.getLevels().size();
+	}
+	
+	private void bounceOffSide(Side s) {
+		if (s == Side.TOP || s == Side.BOTTOM) {
+	    	ball.setYSpeed(ball.getYSpeed() * -1);
+	    	ball.setXSpeed(ball.getXSpeed() + 0.1 * Math.abs(ball.getYSpeed())
+	    									  * (ball.getXSpeed() > 0 ? 1 : -1));
+	    } else {
+	    	ball.setXSpeed(ball.getXSpeed() * -1);
+	    	ball.setYSpeed(ball.getYSpeed() + 0.1 * Math.abs(ball.getXSpeed()) 
+	    										* (ball.getYSpeed() > 0 ? -1 : 1));
+	    }
+	}
+	
+	private enum Side {
+	   TOP, BOTTOM, LEFT, RIGHT
+   }
