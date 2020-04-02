@@ -1,4 +1,4 @@
-Group project for ECSE 223 - Model-based Programming
+# Group project for ECSE 223 - Model-based Programming
 
 The Block223 application is a clone of the popular Brick Breaker game and was implemented using Java.
 
