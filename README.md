@@ -6,10 +6,14 @@ Users are first greeted at the application login page, where they can either log
 ![image](https://user-images.githubusercontent.com/43659916/78211525-38be0c80-747b-11ea-8d1d-a67c1d14da1e.png)
 
 New users can create both a player and admin account:
+
 ![image](https://user-images.githubusercontent.com/43659916/78211652-94889580-747b-11ea-8d4d-0cf1c6393d63.png)
 
-If they login with their admin account, 
+If they login with their admin account, they can choose to either create a new game or edit an existing one:
+
 ![image](https://user-images.githubusercontent.com/43659916/78211794-02cd5800-747c-11ea-9e15-14dfa5d5c939.png)
+
+In the edit game screen, they can customize the game properties and add new blocks or edit existing ones:
 
 ![image](https://user-images.githubusercontent.com/43659916/78211777-f648ff80-747b-11ea-9b15-0b1c554587f7.png)
 
