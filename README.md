@@ -1,6 +1,6 @@
 # Group project for ECSE 223 - Model-based Programming
 
-The Block223 application is a comprehensive implementation of the popular BrickBreaker game using Java. As a team, we devised and implemented a domain model (using UML) to allow for the creation and playability of levels, and developed the application using MVC principles.
+The Block223 application is a comprehensive implementation of the popular BrickBreaker game using Java. As a team, we devised and implemented a domain model (using UML) to allow for the creation and playability of levels, and developed the application following MVC principles.
 
 Users are first greeted at the application login page, where they can either login using their credentials or create a new account:
 
